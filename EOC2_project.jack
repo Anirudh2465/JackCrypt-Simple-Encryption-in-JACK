@@ -1,0 +1,133 @@
+class Main {
+    function void main() {
+        var String message, key, ciphertext, decryptedMessage;
+
+        let message = "HOW DOES THIS EVEN WORK!!!";
+
+        do Output.printString("Length of message is: ");
+        do Output.printInt(String.length(message));
+        do Output.printString("\n");
+
+        do Random.init();
+        do Random.setSeed(12345);
+
+        let key = Main.generateKey(message);
+        do Output.printString("Generated key: ");
+        do Output.printString(key);
+        do Output.printString("\n");
+
+        let ciphertext = Main.encrypt(message, key);
+        do Output.printString("Ciphertext: ");
+        do Output.printString(ciphertext);
+        do Output.printString("\n");
+
+        let decryptedMessage = Main.decrypt(ciphertext, key);
+        do Output.printString("Decrypted message: ");
+        do Output.printString(decryptedMessage);
+        do Output.printString("\n");
+
+        return;
+    }
+
+    function String generateKey(String message) {
+        var int messageLength, count, randomVal;
+        var Array key, used;
+        var char charAtRandomVal;
+        var String keyStr;
+
+        let messageLength = message.length();
+        let key = Array.new(messageLength);
+        let used = Array.new(messageLength);
+        let count = 0;
+        
+        while (count < messageLength) {
+            let randomVal = Random.randRange(messageLength - 1);
+            if (used[randomVal] = 0) {
+                let used[randomVal] = 1;
+                let charAtRandomVal = message.charAt(randomVal);
+                let key[count] = charAtRandomVal;
+                let count = count + 1;
+            }
+        }
+
+        let keyStr = String.new("");
+        let count = 0;
+        while (count < messageLength) {
+            do keyStr.appendChar(key[count]);
+            let count = count + 1;
+        }
+
+        return keyStr;
+    }
+
+    function String xor1(String message, String key) {
+        var int i, messageLength;
+        var Array cipher;
+        var String cipherStr;
+
+        let messageLength = message.length();
+        let cipher = Array.new(messageLength);
+
+        let i = 0;
+        while (i < messageLength) {
+            let cipher[i] = message.charAt(i) ^ key.charAt(i);
+            let i = i + 1; // Fix: Update the value of i
+        }
+
+        let cipherStr = String.new("");
+        let i = 0;
+        while (i < messageLength) {
+            do cipherStr.appendChar(cipher[i]);
+            let i = i + 1; // Fix: Update the value of i
+        }
+
+        return cipherStr;
+    }
+
+
+    function String encrypt(String message, String key) {
+        return Main.xor1(message, key);
+    }
+
+    function String decrypt(String ciphertext, String key) {
+        return Main.xor1(ciphertext, key);
+    }
+}
+
+class Random {
+    static field int multiplier, increment, modulus, seed;
+
+    function void init() {
+        let Random.multiplier = 1103515245;
+        let Random.increment = 12345;
+        let Random.modulus = 2147483647;
+        return;
+    }
+
+    function void setSeed(int newSeed) {
+        let Random.seed = newSeed;
+        return;
+    }
+
+    function int rand() {
+        let Random.seed = ((Random.seed * Random.multiplier) + Random.increment) % Random.modulus;
+        return Random.seed;
+    }
+
+    function int randRange(int range) {
+        var int mask, ret;
+        let mask = 1;
+
+        while (mask < range) {
+            let mask = (mask * 2) + 1;
+        }
+
+        let ret = Random.rand() & mask;
+
+        while (ret > range) {
+            let ret = Random.rand() & mask;
+        }
+
+        return ret;
+    }
+}
